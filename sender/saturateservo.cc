@@ -123,7 +123,7 @@ void SaturateServo::tick( void )
 
       
       printf( "%s pid=%d DATA SENT %d senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
-      _name.c_str(), getpid(), amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
+      _name.c_str(), _send_id, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
 
       _packets_sent++;
     }
