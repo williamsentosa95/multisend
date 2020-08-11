@@ -121,9 +121,9 @@ void SaturateServo::tick( void )
 
       _send.send( Socket::Packet( _remote, outgoing.str( 1400 ) ) );
 
-      /*
+      
       printf( "%s pid=%d DATA SENT %d senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
-      _name.c_str(), getpid(), amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp ); */
+      _name.c_str(), getpid(), amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
 
       _packets_sent++;
     }
