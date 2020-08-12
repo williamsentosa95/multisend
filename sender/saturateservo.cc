@@ -113,6 +113,8 @@ void SaturateServo::tick( void )
     return;
   }
 
+  printf("Tick called!\n");
+
   int num_outstanding = _packets_sent - _max_ack_id - 1;
 
   if ( num_outstanding < _window ) {
