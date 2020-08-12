@@ -28,8 +28,10 @@ int main( int argc, char *argv[] )
   uint64_t ts=Socket::timestamp();
   if ( argc == 1 ) { /* server */
     server = true;
+    printf("Binding socket!");
     data_socket.bind( Socket::Address( "0.0.0.0", 9001 ) );
     feedback_socket.bind( Socket::Address( "0.0.0.0", 9002 ) );
+    printf("Finish binding socket!");
   } else { /* client */
     server = false;
     
