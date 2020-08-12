@@ -127,7 +127,7 @@ void SaturateServo::tick( void )
       outgoing.sender_id = _send_id;
       string data_to_send = outgoing.str(1400);
 
-      if (not _server) {
+      if (_server) {
         _send.send( Socket::Packet( _remote, data_to_send ) );
 
         printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
