@@ -69,8 +69,8 @@ void SaturateServo::recv( void )
     int64_t rtt_ns = contents->recv_timestamp - contents->sent_timestamp;
     double rtt = rtt_ns / 1.e9;
 
-    printf("SaturateServo: %s Packet RECEIVED senderid=%d, seq=%d, send_time=%ld,  recv_time=%ld, rtt=%.4f, size=%lu",
-       _name.c_str(),_server ? _foreign_id : contents->sender_id , contents->ack_number, contents->sent_timestamp, contents->recv_timestamp, (double)rtt,  incoming.payload.size() );
+     // printf("SaturateServo: %s ACK RECEIVED senderid=%d, seq=%d, send_time=%ld,  recv_time=%ld, rtt=%.4f, size=%lu\n",
+     //   _name.c_str(),_server ? _foreign_id : contents->sender_id , contents->ack_number, contents->sent_timestamp, contents->recv_timestamp, (double)rtt,  incoming.payload.size() );
 
     fprintf( _log_file, "%s ACK RECEIVED senderid=%d, seq=%d, send_time=%ld,  recv_time=%ld, rtt=%.4f, %d => ",
        _name.c_str(),_server ? _foreign_id : contents->sender_id , contents->ack_number, contents->sent_timestamp, contents->recv_timestamp, (double)rtt,  _window );
@@ -130,8 +130,8 @@ void SaturateServo::tick( void )
       _send.send( Socket::Packet( _remote, data_to_send ) );
 
       
-      // printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
-      // _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() );
+      printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
+       _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() );
 
       _packets_sent++;
     }
