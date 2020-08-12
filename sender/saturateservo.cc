@@ -133,9 +133,9 @@ void SaturateServo::tick( void )
         printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
         _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() ); 
         
-        _packets_sent++;
       }
     
+      _packets_sent++;
     }
 
     _next_transmission_time = Socket::timestamp() + _transmission_interval;
