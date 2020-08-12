@@ -1,9 +1,13 @@
 #include <assert.h>
+#include <string>
+#include <iostream>
 
 #include "saturateservo.hh"
 #include "socket.hh"
 #include "payload.hh"
 #include "acker.hh"
+
+using namespace std;
 
 SaturateServo::SaturateServo( const char * s_name,
                               FILE* log_file,
@@ -118,12 +122,13 @@ void SaturateServo::tick( void )
       outgoing.sent_timestamp = Socket::timestamp();
       outgoing.recv_timestamp = 0;
       outgoing.sender_id = _send_id;
+      string data_to_send = outgoing.str(1400);
 
-      _send.send( Socket::Packet( _remote, outgoing.str( 1400 ) ) );
+      _send.send( Socket::Packet( _remote, data_to_send ) );
 
       
-      printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
-      _name.c_str(), _send_id, i, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
+      printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
+      _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() );
 
       _packets_sent++;
     }
