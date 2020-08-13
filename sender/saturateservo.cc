@@ -113,8 +113,6 @@ void SaturateServo::tick( void )
     return;
   }
 
-  printf("Tick called!\n");
-
   int num_outstanding = _packets_sent - _max_ack_id - 1;
 
   if ( num_outstanding < _window ) {
@@ -131,8 +129,8 @@ void SaturateServo::tick( void )
 
       _send.send( Socket::Packet( _remote, data_to_send ) );
 
-      printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
-      _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() ); 
+      // printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
+      // _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() ); 
 
       // if (_server) {
       //   _send.send( Socket::Packet( _remote, data_to_send ) );

@@ -4,6 +4,9 @@
 #include "payload.hh"
 #include "saturateservo.hh"
 
+#define DATA_PACKET_SIZE 1500
+#define LOGGING_INTERVAL_NS 1e9
+
 Acker::Acker( const char *s_name, FILE* log_file_handle, const Socket & s_listen, const Socket & s_send, const Socket::Address & s_remote, const bool s_server, const int s_ack_id )
   : _name( s_name ), 
     _log_file(log_file_handle),
@@ -14,7 +17,9 @@ Acker::Acker( const char *s_name, FILE* log_file_handle, const Socket & s_listen
     _ack_id( s_ack_id ),
     _saturatr( NULL ),
     _next_ping_time( Socket::timestamp() ),
-    _foreign_id( -1 )
+    _logging_time( Socket::timestamp() ),
+    _foreign_id( -1 ),
+    _packet_counter_interval(0)
 {}
 
 void Acker::recv( void )
@@ -50,8 +55,15 @@ void Acker::recv( void )
   outgoing.ack_number = contents->sequence_number;
   _send.send( Socket::Packet( _remote, outgoing.str( sizeof( SatPayload ) ) ) );
 
-  printf("ACKER: %s DATA RECEIVED senderid=%d, seq=%d, send_time=%ld, recv_time=%ld, 1delay=%.4f, size=%lu\n",
-      _name.c_str(),  _server ? contents->sender_id : _ack_id, contents->sequence_number, contents->sent_timestamp, contents->recv_timestamp,oneway, incoming.payload.size() ); 
+  if (Socket::timestamp() - _logging_time > LOGGING_INTERVAL_NS) {
+      float received_data = _packet_counter_interval * DATA_PACKET_SIZE * 8 / (float) 1e6;
+      printf("Received data rate %.2f\n", received_data);
+      _packet_counter_interval = 0;
+      _logging_time = Socket::timestamp(); 
+  } else {
+    _packet_counter_interval++;
+  }
+  
 
    fprintf( _log_file,"%s DATA RECEIVED senderid=%d, seq=%d, send_time=%ld, recv_time=%ld, 1delay=%.4f \n",
       _name.c_str(),  _server ? contents->sender_id : _ack_id, contents->sequence_number, contents->sent_timestamp, contents->recv_timestamp,oneway ); 

@@ -28,10 +28,8 @@ int main( int argc, char *argv[] )
   uint64_t ts=Socket::timestamp();
   if ( argc == 1 ) { /* server */
     server = true;
-    printf("Binding socket!\n");
     data_socket.bind( Socket::Address( "0.0.0.0", 9001 ) );
     feedback_socket.bind( Socket::Address( "0.0.0.0", 9002 ) );
-    printf("Finish binding socket!\n");
   } else { /* client */
     server = false;
     
@@ -59,15 +57,11 @@ int main( int argc, char *argv[] )
   sprintf(log_file_name,"%s-%d-%d",server ? "server" : "client",(int)(ts/1e9),sender_id);
   log_file=fopen(log_file_name,"w");
 
-  printf("finish logging!\n");
-
   SaturateServo saturatr( "OUTGOING", log_file, feedback_socket, data_socket, remote_data_address, server, sender_id );
   Acker acker( "INCOMING", log_file, data_socket, feedback_socket, remote_feedback_address, server, sender_id );
 
   saturatr.set_acker( &acker );
   acker.set_saturatr( &saturatr );
-
-  printf("Finish setting up\n");
 
   while ( 1 ) {
     fflush( NULL );

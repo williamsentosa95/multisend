@@ -21,9 +21,13 @@ private:
 
   uint64_t _next_ping_time;
 
+  uint64_t _logging_time;
+
   static const int _ping_interval = 1000000000;
 
   int _foreign_id;
+
+  uint64_t _packet_counter_interval;
 
 public:
   Acker( const char * s_name,
