@@ -90,7 +90,7 @@ int main( int argc, char *argv[] )
       fprintf( stderr, "ZERO %ld %ld\n", saturatr.wait_time(), acker.wait_time() );
     }
 
-    timeout.tv_sec = 1;
+    timeout.tv_sec = next_transmission_delay / 1000000000;
     timeout.tv_nsec = next_transmission_delay % 1000000000;
     ppoll( poll_fds, 2, &timeout, NULL );
 

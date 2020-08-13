@@ -129,13 +129,18 @@ void SaturateServo::tick( void )
       outgoing.sender_id = _send_id;
       string data_to_send = outgoing.str(1400);
 
-      if (_server) {
-        _send.send( Socket::Packet( _remote, data_to_send ) );
+      _send.send( Socket::Packet( _remote, data_to_send ) );
 
-        printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
-        _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() ); 
+      printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
+      _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() ); 
+
+      // if (_server) {
+      //   _send.send( Socket::Packet( _remote, data_to_send ) );
+
+      //   printf( "SaturateServo: %s pid=%d DATA SENT %d/%d senderid=%d seq=%d, send_time=%ld, recv_time=%ld, size=%lu\n",
+      //   _name.c_str(), _send_id, i+1, amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp, data_to_send.size() ); 
         
-      }
+      // }
     
       _packets_sent++;
     }
@@ -151,9 +156,11 @@ void SaturateServo::tick( void )
     outgoing.recv_timestamp = 0;
     outgoing.sender_id = _send_id;
 
-    if (_server) {
-      _send.send( Socket::Packet( _remote, outgoing.str( 1400 ) ) );
-    }
+    // if (_server) {
+    //   _send.send( Socket::Packet( _remote, outgoing.str( 1400 ) ) );
+    // }
+
+    _send.send( Socket::Packet( _remote, outgoing.str( 1400 ) ) );
 
     /*
     printf( "%s pid=%d DATA SENT senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
