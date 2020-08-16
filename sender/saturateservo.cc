@@ -7,6 +7,8 @@
 #include "payload.hh"
 #include "acker.hh"
 
+#define PAYLOAD_SIZE 1500
+
 using namespace std;
 
 SaturateServo::SaturateServo( const char * s_name,
@@ -125,7 +127,7 @@ void SaturateServo::tick( void )
       outgoing.sent_timestamp = Socket::timestamp();
       outgoing.recv_timestamp = 0;
       outgoing.sender_id = _send_id;
-      string data_to_send = outgoing.str(1400);
+      string data_to_send = outgoing.str(PAYLOAD_SIZE);
 
       _send.send( Socket::Packet( _remote, data_to_send ) );
 
