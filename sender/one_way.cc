@@ -47,7 +47,7 @@ int main( int argc, char *argv[] )
   FILE* log_file;
   char log_file_name[50];
   const char * direction = argv[1];
-  bool uplink = strcmp(direction, "up");
+  bool uplink = (strcmp(direction, "up") == 0);
 
   sprintf(log_file_name,"%s-%s-%d-%d", server ? "server" : "client", uplink ? "up" : "down", (int)(ts/1e9),sender_id);
   log_file=fopen(log_file_name,"w");
