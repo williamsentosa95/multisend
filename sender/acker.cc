@@ -53,6 +53,7 @@ void Acker::recv( void )
   SatPayload outgoing( *contents );
   outgoing.sequence_number = -1;
   outgoing.ack_number = contents->sequence_number;
+  printf("--- Sending ACK ---\n");
   _send.send( Socket::Packet( _remote, outgoing.str( sizeof( SatPayload ) ) ) );
 
   if (Socket::timestamp() - _logging_time > LOGGING_INTERVAL_NS) {
