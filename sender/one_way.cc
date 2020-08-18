@@ -18,12 +18,12 @@ int main( int argc, char *argv[] )
     exit( 1 );
   }
 
-  Socket data_socket;
+  Socket data_socket, feedback_socket;
   bool server;
 
   int sender_id = getpid();
 
-  Socket::Address remote_data_address( UNKNOWN );
+  Socket::Address remote_data_address( UNKNOWN ), remote_feedback_address( UNKNOWN );;
 
   uint64_t ts=Socket::timestamp();
   if ( argc == 2 ) { /* server */
@@ -42,6 +42,10 @@ int main( int argc, char *argv[] )
     data_socket.bind( Socket::Address( test_ip, 9003 ) );
     data_socket.bind_to_device( test_dev );
     remote_data_address = Socket::Address( server_ip, 9001 );
+
+    feedback_socket.bind( Socket::Address( test_ip, 9004 ) );
+    feedback_socket.bind_to_device( test_dev );
+    remote_feedback_address = Socket::Address( server_ip, 9002 );
   }
 
   FILE* log_file;
@@ -52,8 +56,8 @@ int main( int argc, char *argv[] )
   sprintf(log_file_name,"%s-%s-%d-%d", server ? "server" : "client", uplink ? "up" : "down", (int)(ts/1e9),sender_id);
   log_file=fopen(log_file_name,"w");
 
-  SaturateServo saturatr( "OUTGOING", log_file, data_socket, data_socket, remote_data_address, server, sender_id );
-  Acker acker( "INCOMING", log_file, data_socket, data_socket, remote_data_address, server, sender_id );
+  SaturateServo saturatr( "OUTGOING", log_file, feedback_socket, data_socket, remote_data_address, server, sender_id );
+  Acker acker( "INCOMING", log_file, data_socket, feedback_socket, remote_feedback_address, server, sender_id );
 
   saturatr.set_acker( &acker );
   acker.set_saturatr( &saturatr );
@@ -67,7 +71,7 @@ int main( int argc, char *argv[] )
         
         /* wait for incoming packet OR expiry of timer */
         struct pollfd poll_fds[ 1 ];
-        poll_fds[ 0 ].fd = data_socket.get_sock();
+        poll_fds[ 0 ].fd = feedback_socket.get_sock();
         poll_fds[ 0 ].events = POLLIN;
 
         struct timespec timeout;
