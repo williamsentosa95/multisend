@@ -43,7 +43,7 @@ void Acker::recv( void )
     }
 
     if ( _remote == UNKNOWN ) {
-      printf("FAILLLLLL!! Remote unknown!")
+      printf("FAILLLLLL!! Remote unknown!\n");
       return;
     }
   }
