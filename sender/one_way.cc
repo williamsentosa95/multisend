@@ -66,39 +66,68 @@ int main( int argc, char *argv[] )
   saturatr.set_acker( &acker );
   acker.set_saturatr( &saturatr );
 
-  while ( 1 ) {
-    fflush( NULL );
+  if ((server && !uplink) || (!server && uplink)) { // Send data
+      while ( 1 ) {
+        fflush( NULL );
 
-    /* possibly send packet */
-    if ((server && !uplink) || (!server && uplink)) {
-      saturatr.tick();
-    }
-    acker.tick();
-    
-    /* wait for incoming packet OR expiry of timer */
-    struct pollfd poll_fds[ 2 ];
-    poll_fds[ 0 ].fd = data_socket.get_sock();
-    poll_fds[ 0 ].events = POLLIN;
-    poll_fds[ 1 ].fd = feedback_socket.get_sock();
-    poll_fds[ 1 ].events = POLLIN;
+        /* possibly send packet */
+        saturatr.tick();
+        acker.tick();
+        
+        /* wait for incoming packet OR expiry of timer */
+        struct pollfd poll_fds[ 2 ];
+        poll_fds[ 0 ].fd = data_socket.get_sock();
+        poll_fds[ 0 ].events = POLLIN;
+        poll_fds[ 1 ].fd = feedback_socket.get_sock();
+        poll_fds[ 1 ].events = POLLIN;
 
-    struct timespec timeout;
-    uint64_t next_transmission_delay = std::min( saturatr.wait_time(), acker.wait_time() );
+        struct timespec timeout;
+        uint64_t next_transmission_delay = std::min( saturatr.wait_time(), acker.wait_time() );
 
-    if ( next_transmission_delay == 0 ) {
-      fprintf( stderr, "ZERO %ld %ld\n", saturatr.wait_time(), acker.wait_time() );
-    }
+        if ( next_transmission_delay == 0 ) {
+          fprintf( stderr, "ZERO %ld %ld\n", saturatr.wait_time(), acker.wait_time() );
+        }
 
-    timeout.tv_sec = next_transmission_delay / 1000000000;
-    timeout.tv_nsec = next_transmission_delay % 1000000000;
-    ppoll( poll_fds, 2, &timeout, NULL );
+        timeout.tv_sec = next_transmission_delay / 1000000000;
+        timeout.tv_nsec = next_transmission_delay % 1000000000;
+        ppoll( poll_fds, 2, &timeout, NULL );
 
-    if ( poll_fds[ 0 ].revents & POLLIN ) {
-      acker.recv();
-    }
+        if ( poll_fds[ 0 ].revents & POLLIN ) {
+          acker.recv();
+        }
 
-    if ( poll_fds[ 1 ].revents & POLLIN ) {
-      saturatr.recv();
-    }
+        if ( poll_fds[ 1 ].revents & POLLIN ) {
+          saturatr.recv();
+        }
+      }
+  } else {
+    while ( 1 ) {
+        fflush( NULL );
+
+        /* possibly send packet */
+        acker.tick();
+        
+        /* wait for incoming packet OR expiry of timer */
+        struct pollfd poll_fds[ 1 ];
+        poll_fds[ 0 ].fd = data_socket.get_sock();
+        poll_fds[ 0 ].events = POLLIN;
+
+        struct timespec timeout;
+        uint64_t next_transmission_delay = acker.wait_time();
+
+        if ( next_transmission_delay == 0 ) {
+          fprintf( stderr, "ZERO %ld \n", acker.wait_time() );
+        }
+
+        timeout.tv_sec = next_transmission_delay / 1000000000;
+        timeout.tv_nsec = next_transmission_delay % 1000000000;
+        ppoll( poll_fds, 1, &timeout, NULL );
+
+        if ( poll_fds[ 0 ].revents & POLLIN ) {
+          acker.recv();
+        }
+
+      }
   }
+
 }
