@@ -88,7 +88,7 @@ int main( int argc, char *argv[] )
   } else {
     while ( 1 ) {
         fflush( NULL );
-
+        printf("Acker ticking\n");
         acker.tick();
 
         /* wait for incoming packet OR expiry of timer */
@@ -99,11 +99,16 @@ int main( int argc, char *argv[] )
         struct timespec timeout;
         uint64_t next_transmission_delay = acker.wait_time();
 
+        if ( next_transmission_delay == 0 ) {
+          fprintf( stderr, "ZERO %ld \n", acker.wait_time() );
+        }
+
         timeout.tv_sec = next_transmission_delay / 1000000000;
         timeout.tv_nsec = next_transmission_delay % 1000000000;
         ppoll( poll_fds, 1, &timeout, NULL );
 
         if ( poll_fds[ 0 ].revents & POLLIN ) {
+          printf("ACKER REC DATA\n");
           acker.recv();
         }
 
