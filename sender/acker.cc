@@ -32,6 +32,8 @@ void Acker::recv( void )
   int64_t oneway_ns = contents->recv_timestamp - contents->sent_timestamp;
   double oneway = oneway_ns / 1.e9;
 
+  printf("Received data packet 1rtt %l\n", oneway);
+
   if ( _server ) {
     if ( _saturatr ) {
       if ( contents->sender_id > _foreign_id ) {
