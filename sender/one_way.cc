@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "acker.hh"
-#include "saturateservo.hh"
+#include "saturateservo_oneway.hh"
 
 using namespace std;
 
@@ -18,18 +18,17 @@ int main( int argc, char *argv[] )
     exit( 1 );
   }
 
-  Socket data_socket, feedback_socket;
+  Socket data_socket;
   bool server;
 
   int sender_id = getpid();
 
-  Socket::Address remote_data_address( UNKNOWN ), remote_feedback_address( UNKNOWN );;
+  Socket::Address remote_data_address( UNKNOWN );
 
   uint64_t ts=Socket::timestamp();
   if ( argc == 2 ) { /* server */
     server = true;
     data_socket.bind( Socket::Address( "0.0.0.0", 9001 ) );
-    feedback_socket.bind( Socket::Address("0.0.0.0", 9002) );
   } else { /* client */
     server = false;
 
@@ -43,10 +42,6 @@ int main( int argc, char *argv[] )
     data_socket.bind( Socket::Address( test_ip, 9003 ) );
     data_socket.bind_to_device( test_dev );
     remote_data_address = Socket::Address( server_ip, 9001 );
-
-    feedback_socket.bind( Socket::Address( test_ip, 9004 ) );
-    feedback_socket.bind_to_device( test_dev );
-    remote_feedback_address = Socket::Address( server_ip, 9002 );
   }
 
   FILE* log_file;
@@ -57,22 +52,20 @@ int main( int argc, char *argv[] )
   sprintf(log_file_name,"%s-%s-%d-%d", server ? "server" : "client", uplink ? "up" : "down", (int)(ts/1e9),sender_id);
   log_file=fopen(log_file_name,"w");
 
-  SaturateServo saturatr( "OUTGOING", log_file, feedback_socket, data_socket, remote_data_address, server, sender_id );
-  Acker acker( "INCOMING", log_file, data_socket, feedback_socket, remote_feedback_address, server, sender_id );
+  bool is_send_data = (server && !uplink) || (!server && uplink);
 
-  saturatr.set_acker( &acker );
-  acker.set_saturatr( &saturatr );
+  SaturateServoOneWay saturatr( is_send_data ? "OUTGOING" : "INCOMING", log_file, data_socket, remote_data_address, server, sender_id );
 
-  if ((server && !uplink) || (!server && uplink)) { // Send data
+  if (is_send_data) { // Send data
       while ( 1 ) {
         fflush( NULL );
 
         /* possibly send packet */
-        saturatr.tick();
+        saturatr.send_data();
         
         /* wait for incoming packet OR expiry of timer */
         struct pollfd poll_fds[ 1 ];
-        poll_fds[ 0 ].fd = feedback_socket.get_sock();
+        poll_fds[ 0 ].fd = data_socket.get_sock();
         poll_fds[ 0 ].events = POLLIN;
 
         struct timespec timeout;
@@ -87,14 +80,12 @@ int main( int argc, char *argv[] )
         ppoll( poll_fds, 1, &timeout, NULL );
 
         if ( poll_fds[ 0 ].revents & POLLIN ) {
-          saturatr.recv();
+          saturatr.recv_ack();
         }
       }
   } else {
     while ( 1 ) {
         fflush( NULL );
-        printf("Acker ticking\n");
-        acker.tick();
 
         /* wait for incoming packet OR expiry of timer */
         struct pollfd poll_fds[ 1 ];
@@ -102,19 +93,14 @@ int main( int argc, char *argv[] )
         poll_fds[ 0 ].events = POLLIN;
 
         struct timespec timeout;
-        uint64_t next_transmission_delay = acker.wait_time();
-
-        if ( next_transmission_delay == 0 ) {
-          fprintf( stderr, "ZERO %ld \n", acker.wait_time() );
-        }
+        uint64_t next_transmission_delay = 1000000000;
 
         timeout.tv_sec = next_transmission_delay / 1000000000;
         timeout.tv_nsec = next_transmission_delay % 1000000000;
         ppoll( poll_fds, 1, &timeout, NULL );
 
         if ( poll_fds[ 0 ].revents & POLLIN ) {
-          printf("ACKER REC DATA\n");
-          acker.recv();
+          saturatr.recv_data();
         }
 
       }

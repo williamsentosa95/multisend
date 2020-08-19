@@ -1,5 +1,5 @@
-source = send1way.cc socket.cc buffer-setpoint.cc hist.cc controlled-delay.cc rate-estimate.cc payload.cc history.cc delay-servo.cc saturatr.cc acker.cc saturateservo.cc cellsim.cc cellsim-tap.cc select.cc packetsocket.cc tapsocket.cc macaddr.cc one_way.cc
-objects = socket.o hist.o rate-estimate.o payload.o history.o delay-servo.o acker.o saturateservo.o select.o packetsocket.o tapsocket.o macaddr.cc
+source = send1way.cc socket.cc buffer-setpoint.cc hist.cc controlled-delay.cc rate-estimate.cc payload.cc history.cc delay-servo.cc saturatr.cc acker.cc saturateservo.cc cellsim.cc cellsim-tap.cc select.cc packetsocket.cc tapsocket.cc macaddr.cc one_way.cc saturateservo_oneway.cc
+objects = socket.o hist.o rate-estimate.o payload.o history.o delay-servo.o acker.o saturateservo.o select.o packetsocket.o tapsocket.o macaddr.cc saturateservo_oneway.o
 executables = send1way buffer-setpoint controlled-delay saturatr cellsim cellsim-tap one-way
 
 CXX = g++
