@@ -58,7 +58,7 @@ void SaturateServoOneWay::recv_ack( void ) {
 
   /* possibly roam */
   if ( _server ) {
-      if ( (contents->sender_id > _foreign_id) && (contents->ack_number == -1) ) {
+      if ( (contents->sender_id > _foreign_id) ) {
 	_foreign_id = contents->sender_id;
       }
   }

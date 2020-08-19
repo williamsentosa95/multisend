@@ -51,7 +51,7 @@ int main( int argc, char *argv[] )
 
   bool is_send_data = (server && !uplink) || (!server && uplink);
 
-  sprintf(log_file_name,"%s-%s-%s-%d-%d", server ? "server" : "client", uplink ? "up" : "down", is_send_data ? "data" : "ack", (int)(ts/1e9),sender_id);
+  sprintf(log_file_name,"%s-%s-%s-%d-%d", server ? "server" : "client", uplink ? "up" : "down", is_send_data ? "ack" : "data", (int)(ts/1e9),sender_id);
   log_file=fopen(log_file_name,"w");
 
   SaturateServoOneWay saturatr( is_send_data ? "OUTGOING" : "INCOMING", log_file, data_socket, remote_data_address, server, sender_id );
