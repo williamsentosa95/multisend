@@ -31,6 +31,8 @@ private:
 
   uint64_t _packet_counter_interval;
 
+  uint64_t _next_ping_time;  
+
   static const int LOWER_WINDOW = 20;
   static const int UPPER_WINDOW = 1500;
 
@@ -51,6 +53,8 @@ public:
   uint64_t wait_time( void ) const;
 
   void send_data( void );
+
+  void ping( void );
 
   void set_remote( const Socket::Address & s_remote ) { _remote = s_remote; }
 

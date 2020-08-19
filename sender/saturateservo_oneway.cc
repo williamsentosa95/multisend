@@ -34,7 +34,8 @@ SaturateServoOneWay::SaturateServoOneWay( const char * s_name,
 	_max_ack_id(-1),
 	_window(LOWER_WINDOW),
 	_logging_time( Socket::timestamp() ),
-	_packet_counter_interval(0)
+	_packet_counter_interval(0),
+	_next_ping_time( Socket::timestamp() )
 {}
 
 
@@ -46,7 +47,7 @@ void SaturateServoOneWay::recv_ack( void ) {
 
   if (contents->ack_number == -1 && contents->sequence_number == -1) { // Process ping heartbeat
   	set_remote(incoming.addr);
-  	break;
+  	return;
   }
 
   if ( contents->sequence_number != -1 ) {
@@ -162,7 +163,7 @@ uint64_t SaturateServoOneWay::wait_time( void ) const {
 void SaturateServoOneWay::ping( void ) {
   /* send NAT heartbeats */
   if ( _remote == UNKNOWN ) {
-    _next_ping_time = Socket::timestamp() + _ping_interval;
+    _next_ping_time = Socket::timestamp() + PING_INTERVAL;
     return;
   }
 
@@ -172,17 +173,16 @@ void SaturateServoOneWay::ping( void ) {
     contents.ack_number = -1;
     contents.sent_timestamp = Socket::timestamp();
     contents.recv_timestamp = 0;
-    contents.sender_id = _ack_id;
+    contents.sender_id = _send_id;
 
     _socket.send( Socket::Packet( _remote, contents.str( sizeof( SatPayload ) ) ) );
 
-    _next_ping_time = Socket::timestamp() + _ping_interval;
+    _next_ping_time = Socket::timestamp() + PING_INTERVAL;
   }
 }
 
 void SaturateServoOneWay::send_data( void ) {
   if ( _remote == UNKNOWN ) {
-  	printf("%s\n", _socket.str());
     return;
   }
 

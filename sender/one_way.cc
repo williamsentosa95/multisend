@@ -58,7 +58,6 @@ int main( int argc, char *argv[] )
 
   if (!server) {
     saturatr.set_remote(remote_data_address);
-    saturatr.ping();
   }
 
   if (is_send_data) { // Send data
@@ -91,6 +90,10 @@ int main( int argc, char *argv[] )
   } else {
     while ( 1 ) {
         fflush( NULL );
+
+        if (!server) {
+          saturatr.ping();
+        }
 
         /* wait for incoming packet OR expiry of timer */
         struct pollfd poll_fds[ 1 ];
