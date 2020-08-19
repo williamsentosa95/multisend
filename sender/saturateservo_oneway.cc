@@ -10,6 +10,7 @@
 #define PAYLOAD_SIZE 1428
 #define LOGGING_INTERVAL_NS 1e9
 #define DATA_PACKET_SIZE 1470
+#define PING_INTERVAL 1e9
 
 
 using namespace std;
@@ -42,6 +43,11 @@ void SaturateServoOneWay::recv_ack( void ) {
   Socket::Packet incoming( _socket.recv() );
   SatPayload *contents = (SatPayload *) incoming.payload.data();
   contents->recv_timestamp = incoming.timestamp;
+
+  if (contents->ack_number == -1 && contents->sequence_number == -1) { // Process ping heartbeat
+  	set_remote(incoming.addr);
+  	break;
+  }
 
   if ( contents->sequence_number != -1 ) {
     /* not an ack */
@@ -153,8 +159,30 @@ uint64_t SaturateServoOneWay::wait_time( void ) const {
   }
 }
 
+void SaturateServoOneWay::ping( void ) {
+  /* send NAT heartbeats */
+  if ( _remote == UNKNOWN ) {
+    _next_ping_time = Socket::timestamp() + _ping_interval;
+    return;
+  }
+
+  if ( _next_ping_time < Socket::timestamp() ) {
+    SatPayload contents;
+    contents.sequence_number = -1;
+    contents.ack_number = -1;
+    contents.sent_timestamp = Socket::timestamp();
+    contents.recv_timestamp = 0;
+    contents.sender_id = _ack_id;
+
+    _socket.send( Socket::Packet( _remote, contents.str( sizeof( SatPayload ) ) ) );
+
+    _next_ping_time = Socket::timestamp() + _ping_interval;
+  }
+}
+
 void SaturateServoOneWay::send_data( void ) {
   if ( _remote == UNKNOWN ) {
+  	printf("%s\n", _socket.str());
     return;
   }
 

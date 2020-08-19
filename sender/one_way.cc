@@ -56,6 +56,11 @@ int main( int argc, char *argv[] )
 
   SaturateServoOneWay saturatr( is_send_data ? "OUTGOING" : "INCOMING", log_file, data_socket, remote_data_address, server, sender_id );
 
+  if (!server) {
+    saturatr.set_remote(remote_data_address);
+    saturatr.ping();
+  }
+
   if (is_send_data) { // Send data
       while ( 1 ) {
         fflush( NULL );
