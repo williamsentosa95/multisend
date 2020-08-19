@@ -36,7 +36,9 @@ void Acker::recv( void )
 
   if ( _server ) {
     if ( _saturatr ) {
+      printf("Enter 2\n");
       if ( contents->sender_id > _foreign_id ) {
+        printf("Enter 3\n");
 	_foreign_id = contents->sender_id;
 	_saturatr->set_remote( incoming.addr );
       }
