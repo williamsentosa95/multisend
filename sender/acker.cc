@@ -32,7 +32,8 @@ void Acker::recv( void )
   int64_t oneway_ns = contents->recv_timestamp - contents->sent_timestamp;
   double oneway = oneway_ns / 1.e9;
 
-  printf("Received data packet 1rtt %.4f\n", oneway);
+  printf("ACKER: %s DATA RECEIVED senderid=%d, seq=%d, send_time=%ld, recv_time=%ld, 1delay=%.4f, size=%lu\n",
+      _name.c_str(),  _server ? contents->sender_id : _ack_id, contents->sequence_number, contents->sent_timestamp, contents->recv_timestamp,oneway, incoming.payload.size() ); 
 
   if ( _server ) {
     if ( _saturatr ) {
