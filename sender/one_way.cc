@@ -29,6 +29,7 @@ int main( int argc, char *argv[] )
   if ( argc == 2 ) { /* server */
     server = true;
     data_socket.bind( Socket::Address( "0.0.0.0", 9001 ) );
+    feedback_socket.bind( Socket::Address("0.0.0.0", 9002) );
   } else { /* client */
     server = false;
 
