@@ -1,9 +1,9 @@
-source = send1way.cc socket.cc buffer-setpoint.cc hist.cc controlled-delay.cc rate-estimate.cc payload.cc history.cc delay-servo.cc saturatr.cc acker.cc saturateservo.cc cellsim.cc cellsim-tap.cc select.cc packetsocket.cc tapsocket.cc macaddr.cc one_way.cc saturateservo_oneway.cc
-objects = socket.o hist.o rate-estimate.o payload.o history.o delay-servo.o acker.o saturateservo.o select.o packetsocket.o tapsocket.o macaddr.cc saturateservo_oneway.o
-executables = send1way buffer-setpoint controlled-delay saturatr cellsim cellsim-tap one-way
+source = send1way.cc socket.cc buffer-setpoint.cc hist.cc controlled-delay.cc rate-estimate.cc payload.cc history.cc delay-servo.cc saturatr.cc acker.cc saturateservo.cc cellsim.cc cellsim-tap.cc select.cc packetsocket.cc tapsocket.cc macaddr.cc one_way.cc saturateservo_oneway.cc fixed_rate_sending.cc
+objects = socket.o hist.o rate-estimate.o payload.o history.o delay-servo.o acker.o saturateservo.o select.o packetsocket.o tapsocket.o macaddr.cc saturateservo_oneway.o fixed_rate_sending.o
+executables = send1way buffer-setpoint controlled-delay saturatr cellsim cellsim-tap one-way fixed-rate
 
 CXX = g++
-CXXFLAGS = -g -O3 -std=c++0x -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500 -D_GNU_SOURCE
+CXXFLAGS = -g -O3 -std=c++0x -pthread -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500 -D_GNU_SOURCE
 LIBS = -lm -lrt
 
 all: $(executables)
@@ -21,6 +21,9 @@ saturatr: saturatr.o $(objects)
 	$(CXX) $(CXXFLAGS) -o $@ $+ $(LIBS)
 
 one-way: one_way.o $(objects)
+	$(CXX) $(CXXFLAGS) -o $@ $+ $(LIBS)
+
+fixed-rate: send_fixed_rate.o $(objects)
 	$(CXX) $(CXXFLAGS) -o $@ $+ $(LIBS)
 
 cellsim: cellsim.o $(objects)
