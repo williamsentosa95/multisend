@@ -62,6 +62,13 @@ int main( int argc, char *argv[] )
   sprintf(log_file_name,"%s-%s-%d-%d", server ? "server" : "client" , "fixedrate" , (int)(ts/1e9),sender_id);
   log_file=fopen(log_file_name,"w");
 
+  if (server) {
+    fprintf(log_file, "Command %s", argv[0]);
+  } else {
+    fprintf(log_file, "Command %s %s %s %s %s %s\n", argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  }
+  
+
   FixedRateSending saturatr( server ? "OUTGOING" : "INCOMING", log_file, data_socket, remote_data_address, server, sender_id, packet_per_second, packet_size );
 
 
