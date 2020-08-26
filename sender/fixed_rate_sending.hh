@@ -37,6 +37,10 @@ private:
 
   int _packet_size;
 
+  double _total_rtt_per_timestamp;
+
+  uint64_t _received_ack_per_timestamp;
+
   static const int LOWER_WINDOW = 20;
   static const int UPPER_WINDOW = 1500;
 

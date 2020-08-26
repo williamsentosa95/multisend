@@ -37,7 +37,9 @@ FixedRateSending::FixedRateSending( const char * s_name,
 	_packet_counter_interval(0),
 	_next_ping_time( Socket::timestamp() ),
   _pps ( s_pps ),
-  _packet_size( s_packet_size )
+  _packet_size( s_packet_size ),
+  _total_rtt_per_timestamp(0),
+  _received_ack_per_timestamp(0)
 {}
 
 
@@ -87,6 +89,18 @@ void FixedRateSending::recv_ack( void ) {
        _name.c_str(),_server ? _foreign_id : contents->sender_id , contents->ack_number, contents->sent_timestamp, contents->recv_timestamp, (double)rtt,  _window );
 
     fprintf( _log_file, "%d\n", _window );
+
+    if (Socket::timestamp() - _logging_time > LOGGING_INTERVAL_NS) {
+      _total_rtt_per_timestamp += rtt;
+      _received_ack_per_timestamp++;
+      printf("Received ACKs %lu, avg RTT=%.2f\n", _received_ack_per_timestamp, _total_rtt_per_timestamp / (double) _received_ack_per_timestamp);
+      _total_rtt_per_timestamp = 0;
+      _received_ack_per_timestamp = 0;
+      _logging_time = Socket::timestamp(); 
+    } else {
+      _total_rtt_per_timestamp += rtt;
+      _received_ack_per_timestamp++;
+    }
   }
 }
 
