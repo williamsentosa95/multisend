@@ -93,7 +93,8 @@ void FixedRateSending::recv_ack( void ) {
     if (Socket::timestamp() - _logging_time > LOGGING_INTERVAL_NS) {
       _total_rtt_per_timestamp += rtt;
       _received_ack_per_timestamp++;
-      printf("Received ACKs %lu, avg RTT=%.2f\n", _received_ack_per_timestamp, _total_rtt_per_timestamp / (double) _received_ack_per_timestamp);
+      double avg_rtt = (_total_rtt_per_timestamp / (double) _received_ack_per_timestamp) * 1000;
+      printf("Received ACKs %lu, avg RTT=%.2fms\n", _received_ack_per_timestamp, avg_rtt);
       _total_rtt_per_timestamp = 0;
       _received_ack_per_timestamp = 0;
       _logging_time = Socket::timestamp(); 
@@ -135,6 +136,7 @@ void FixedRateSending::recv_data( void ) {
   _socket.send( Socket::Packet( _remote, outgoing.str( incoming.payload.size() ) ) );
 
   if (Socket::timestamp() - _logging_time > LOGGING_INTERVAL_NS) {
+      _packet_counter_interval++;
       float received_data = _packet_counter_interval * incoming.payload.size() * 8 / (float) 1e6;
       printf("Received data rate %.2f Mbps, #packets = %lu, content size = %lu \n", received_data, _packet_counter_interval, incoming.payload.size());
       _packet_counter_interval = 0;
