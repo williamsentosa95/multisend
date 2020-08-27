@@ -4,7 +4,7 @@
 #include "payload.hh"
 #include "saturateservo.hh"
 
-#define DATA_PACKET_SIZE 1470
+#define DATA_PACKET_SIZE 100
 #define LOGGING_INTERVAL_NS 1e9
 
 Acker::Acker( const char *s_name, FILE* log_file_handle, const Socket & s_listen, const Socket & s_send, const Socket::Address & s_remote, const bool s_server, const int s_ack_id )
@@ -59,6 +59,7 @@ void Acker::recv( void )
   _send.send( Socket::Packet( _remote, outgoing.str( sizeof( SatPayload ) ) ) );
 
   if (Socket::timestamp() - _logging_time > LOGGING_INTERVAL_NS) {
+      _packet_counter_interval++;
       float received_data = _packet_counter_interval * DATA_PACKET_SIZE * 8 / (float) 1e6;
       printf("Received data rate %.2f Mbps\n", received_data);
       _packet_counter_interval = 0;
