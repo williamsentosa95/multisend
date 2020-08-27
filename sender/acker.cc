@@ -4,7 +4,7 @@
 #include "payload.hh"
 #include "saturateservo.hh"
 
-#define DATA_PACKET_SIZE 100
+#define DATA_PACKET_SIZE 1470
 #define LOGGING_INTERVAL_NS 1e9
 
 Acker::Acker( const char *s_name, FILE* log_file_handle, const Socket & s_listen, const Socket & s_send, const Socket::Address & s_remote, const bool s_server, const int s_ack_id )
