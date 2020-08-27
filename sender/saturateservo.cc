@@ -7,7 +7,7 @@
 #include "payload.hh"
 #include "acker.hh"
 
-#define PAYLOAD_SIZE 1428
+#define PAYLOAD_SIZE 100
 
 using namespace std;
 
