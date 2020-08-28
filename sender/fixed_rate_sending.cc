@@ -39,7 +39,8 @@ FixedRateSending::FixedRateSending( const char * s_name,
   _pps ( s_pps ),
   _packet_size( s_packet_size ),
   _total_rtt_per_timestamp(0),
-  _received_ack_per_timestamp(0)
+  _received_ack_per_timestamp(0),
+  _time(0)
 {}
 
 
@@ -94,10 +95,11 @@ void FixedRateSending::recv_ack( void ) {
       _total_rtt_per_timestamp += rtt;
       _received_ack_per_timestamp++;
       double avg_rtt = (_total_rtt_per_timestamp / (double) _received_ack_per_timestamp) * 1000;
-      printf("Received ACKs %lu, avg RTT=%.2fms\n", _received_ack_per_timestamp, avg_rtt);
+      printf("Time %lu : Received ACKs %lu, avg RTT=%.2fms\n", _time, _received_ack_per_timestamp, avg_rtt);
       _total_rtt_per_timestamp = 0;
       _received_ack_per_timestamp = 0;
       _logging_time = Socket::timestamp(); 
+      _time++;
     } else {
       _total_rtt_per_timestamp += rtt;
       _received_ack_per_timestamp++;
