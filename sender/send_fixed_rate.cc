@@ -63,7 +63,7 @@ int main( int argc, char *argv[] )
   log_file=fopen(log_file_name,"w");
 
   if (server) {
-    fprintf(log_file, "Command %s", argv[0]);
+    fprintf(log_file, "Command %s\n", argv[0]);
   } else {
     fprintf(log_file, "Command %s %s %s %s %s %s\n", argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
   }
@@ -73,6 +73,7 @@ int main( int argc, char *argv[] )
 
 
   if (!server) { // Send data
+    saturatr.set_remote(remote_data_address);
     pthread_t send_thread;
 
     pthread_create(&send_thread, NULL, send_data, &saturatr);
