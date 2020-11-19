@@ -7,9 +7,9 @@
 #include "payload.hh"
 #include "acker.hh"
 
-#define PAYLOAD_SIZE 1428
 #define LOGGING_INTERVAL_NS 1e9
 #define PACKET_HEADER_SIZE 42
+#define PING_INTERVAL 1e9
 
 using namespace std;
 
@@ -151,6 +151,27 @@ void FixedRateSending::recv_data( void ) {
    fprintf( _log_file,"%s DATA RECEIVED senderid=%d, seq=%d, send_time=%ld, recv_time=%ld, 1delay=%.4f \n",
       _name.c_str(),  _server ? contents->sender_id : _send_id, contents->sequence_number, contents->sent_timestamp, contents->recv_timestamp,oneway ); 
 
+}
+
+void FixedRateSending::ping( void ) {
+  /* send NAT heartbeats */
+  if ( _remote == UNKNOWN ) {
+    _next_ping_time = Socket::timestamp() + PING_INTERVAL;
+    return;
+  }
+
+  if ( _next_ping_time < Socket::timestamp() ) {
+    SatPayload contents;
+    contents.sequence_number = -1;
+    contents.ack_number = -1;
+    contents.sent_timestamp = Socket::timestamp();
+    contents.recv_timestamp = 0;
+    contents.sender_id = _send_id;
+
+    _socket.send( Socket::Packet( _remote, contents.str( sizeof( SatPayload ) ) ) );
+
+    _next_ping_time = Socket::timestamp() + PING_INTERVAL;
+  }
 }
 
 uint64_t FixedRateSending::wait_time( void ) const {
