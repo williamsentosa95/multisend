@@ -188,8 +188,12 @@ uint64_t FixedRateSending::wait_time( void ) const {
 }
 
 
-void FixedRateSending::is_client_connected(void) {
-  return _remote != UNKNOWN;
+bool FixedRateSending::is_client_connected(void) {
+  if ( _remote == UNKNOWN ) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 void FixedRateSending::send_data( void ) {
