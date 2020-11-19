@@ -107,6 +107,10 @@ void FixedRateSending::recv_ack( void ) {
   }
 }
 
+int FixedRateSending::get_pps( void ) {
+  return _pps;
+}
+
 void FixedRateSending::recv_data( void ) {
   /* get the data packet */
   Socket::Packet incoming( _socket.recv() );

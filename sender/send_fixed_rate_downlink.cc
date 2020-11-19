@@ -14,8 +14,10 @@ using namespace std;
 void *send_data(void *saturatr_) {
    FixedRateSending * saturatr = (FixedRateSending*) saturatr_;
    while (1) {
-    saturatr->send_data();
-    usleep(saturatr->wait_time() / (float) 1e3);
+      for (int i=0; i < saturatr->get_pps() ;i++) {
+        saturatr->send_data();
+     }
+     usleep(1e6);
    }
 }
 
