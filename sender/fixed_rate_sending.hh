@@ -69,6 +69,8 @@ public:
 
   int get_pps( void );
 
+  void is_client_connected(void);
+
   void set_remote( const Socket::Address & s_remote ) { _remote = s_remote; }
 
   FixedRateSending( const FixedRateSending & ) = delete;
