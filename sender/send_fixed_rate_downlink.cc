@@ -13,14 +13,21 @@ using namespace std;
 
 void *send_data(void *saturatr_) {
    FixedRateSending * saturatr = (FixedRateSending*) saturatr_;
+   int a = 0;
    while (1) {
     if (saturatr->is_client_connected()) {
-      for (int i=0; i < saturatr->get_pps() ;i++) {
+      for (int i=0; i < saturatr->get_pps() ; i++) {
           saturatr->send_data();
        }
-       usleep(1e6);
+       if (a <= 0) {
+          usleep(1e6);
+       } else {
+          printf("Data sent!!");
+          usleep(1e9);
+       }
+       a++;
     } else {
-      usleep(1e3);
+      usleep(1e6);
     }
    }
 }
