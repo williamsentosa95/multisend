@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
   uint64_t ts=Socket::timestamp();
   if ( argc == 1 ) { /* server */
     server = true;
-    data_socket.bind( Socket::Address( "0.0.0.0", 9001 ) );
+    data_socket.bind( Socket::Address( "0.0.0.0", 9005 ) );
   } else { /* client */
     server = false;
 
@@ -51,9 +51,9 @@ int main( int argc, char *argv[] )
 
     sender_id = ( (int)(ts/1e9) );
 
-    data_socket.bind( Socket::Address( test_ip, 9003 ) );
+    data_socket.bind( Socket::Address( test_ip, 9007 ) );
     data_socket.bind_to_device( test_dev );
-    remote_data_address = Socket::Address( server_ip, 9001 );
+    remote_data_address = Socket::Address( server_ip, 9005 );
   }
 
   FILE* log_file;
